@@ -550,6 +550,30 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Config",
+			"item": [
+				{
+					"name": "Gerar app inicial config",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/config",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"config"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

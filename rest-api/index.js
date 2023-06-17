@@ -12,7 +12,7 @@ api.use(bodyparser.urlencoded({extended: true}))
 
 // faz que o consign pegue tudo que está dentro da pasta controllers e jogue para dentro app
 consign()
-    .include('controllers')
+    .include('routes')
     .into(api)
 
 api.listen(porta);

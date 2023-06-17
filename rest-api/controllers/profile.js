@@ -1,32 +1,24 @@
-const multer = require('multer');
-const upload = multer();
+const ProfileModel = require('../models/profile');
 
-module.exports = function(api){
+module.exports = class Profile {
 
-    const ProfileModel = require('../models/profile');
+    static async getProfilesByUserId(id){
+        return await ProfileModel.getProfilesByUserId(id)
+    }
 
-    api.get('/profile/:id?', async function (request, response){
-        const profile = await ProfileModel.getProfilesByUserId(request.params.id);
-        response.json(profile);
-    })
+    static async insertNewProfile(data){
+        if((data.name).length > 0 && (data.idUser) && (data.birthdate)){
+            return await ProfileModel.insertNewProfile(data)
+        }
+        return false
+        
+    }
 
-    //add new profile
-    api.post('/profile', upload.none(), async function(request, response){
-        request.body.birthDate = new Date(request.body.birthDate);
-        data = await ProfileModel.insertNewProfile(request.body);
-        response.json(data);
-    });
+    static async updateProfile(data){
+        return await ProfileModel.updateProfile(data)
+    }
 
-    //edit profile
-    api.put('/profile', upload.none(), async function(request, response){
-        request.body.birthDate = new Date(request.body.birthDate);
-        data = await ProfileModel.updateProfile(request.body);
-        response.json(data);
-    });
-
-    //delete profile
-    api.delete('/profile/:id?', upload.none(), async function(request, response){
-        data = await ProfileModel.deleteProfileById(request.params.id);
-        response.json(data);
-    });
+    static async deleteProfileById(id){
+        return await ProfileModel.deleteProfileById(id)
+    }
 }

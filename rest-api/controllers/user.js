@@ -1,62 +1,43 @@
-const multer = require('multer');
-const upload = multer();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const UsersModel = require('../models/user');
 
-module.exports = function(api){
+module.exports = class User {
 
-    const UserModel = require('../models/user');
+    static async getAllUsers(){
+        return await UsersModel.getAllUsers();
+    }
 
-    api.get('/user', async function (request, response){
-        const user = await UserModel.getAllUsers();
-        response.json(user);
-    })
+    static async getAllActiveUsers(){
+        return await UsersModel.ggetAllActiveUsers();
+    }
 
-    api.get('/user/:id?', async function (request, response){
-        const user = await UserModel.getUserById(request.params.id);
-        response.json(user);
-    })
+    static async getUserById(id){
+        return await UsersModel.getUserById(id);
+    }
 
-    //add new user
-    api.post('/user', upload.none(), async function(request, response){
-        request.body.birthDate = new Date(request.body.birthDate);
-        request.body.password = bcrypt.hashSync(request.body.password, 10);
-        data = await UserModel.insertNewUser(request.body);
-        response.json(data);
-    });
-
-    //edit user
-    api.put('/user', upload.none(), async function(request, response){
-        request.body.birthDate = new Date(request.body.birthDate);
-        request.body.password = bcrypt.hashSync(request.body.password, 10);
-        data = await UserModel.updateUser(request.body);
-        response.json(data);
-    });
-
-    //delete user
-    api.delete('/user/:id?', upload.none(), async function(request, response){
-        data = await UserModel.deleteUserById(request.params.id);
-        response.json(data);
-    });
-
-    //login user
-    api.post('/login', upload.none(), async function(request, response){
-        data = await UserModel.checkUserLogin(request.body.email);
-        if(data.length > 0){
-            /* response.json(request.body.password); */
-            bcrypt.compare(request.body.password, data[0].password, function(err, result) {
-                if(result){
-                    token = jwt.sign(data[0], "MySecretKey", {expiresIn: '01m'});
-                    response.json({token: token});
-                }else{
-                    response.json('login incorreto');
-                }
-                if(err){
-                    response.json('n deu boa');
-                }
-            });
-        }else{
-            response.json('login incorreto');
+    static async insertNewUser(data){
+        if((data.name).length > 0 && (data.email).length > 0 && (data.password).length > 0 && (data.phone).length > 0 && (data.birthdate)){
+            if(await this.checkIfEmailExist(data.email) === false){
+                return await UsersModel.insertNewUser(data);
+            }
         }
-    });
+        
+        return false;
+        
+    }
+
+    static async checkIfEmailExist(email){
+        return Boolean((await UsersModel.getActiveUserByEmail(email)).length)
+    }
+
+    static async updateUser(data){
+        return await UsersModel.updateUser(data);
+    }
+
+    static async deleteUserById(id){
+        return await UsersModel.deleteUserById(id);
+    }
+
+    static async checkUserLogin(email){
+        return await UsersModel.checkUserLogin(email);
+    }
 }

@@ -14,6 +14,17 @@ module.exports = class Category {
         });
     }
 
+    static async getCategoryByNameAndUser(data){
+        return await prisma.category.findMany({
+            where: {
+                idUser: parseInt(data.idUser),
+                name: data.name,
+                deleted: false,
+                status: 'ACTIVE'
+            }
+        });
+    }
+
     static async insertNewCategory(data){
         return await prisma.category.create({
             data: {

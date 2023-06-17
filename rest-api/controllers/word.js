@@ -1,30 +1,30 @@
-const multer = require('multer');
-const upload = multer();
+const WordModel = require('../models/word');
 
-module.exports = function(api){
+module.exports = class Word {
 
-    const WordModel = require('../models/word');
+    static async getWordsByCategoryId(id){
+        return await WordModel.getWordsByCategoryId(id)
+    }
 
-    api.get('/word/:id?', async function (request, response){
-        const word = await WordModel.getWordsByCategoryId(request.params.id);
-        response.json(word);
-    })
+    static async insertNewWord(data){
+        if((data.name).length > 0){
+            if(await this.checkIfWordExist(data) === false){
+                return await WordModel.insertNewWord(data)
+            }
+        }
+        return false
+        
+    }
 
-    //add new word
-    api.post('/word', upload.none(), async function(request, response){
-        data = await WordModel.insertNewWord(request.body);
-        response.json(data);
-    });
+    static async checkIfWordExist(data){
+        return Boolean((await WordModel.getWordByNameAndCategory(data)).length)
+    }
 
-    //edit word
-    api.put('/word', upload.none(), async function(request, response){
-        data = await WordModel.updateWordById(request.body);
-        response.json(data);
-    });
+    static async updateWordById(data){
+        return await WordModel.updateWordById(data)
+    }
 
-    //delete word
-    api.delete('/word/:id?', upload.none(), async function(request, response){
-        data = await WordModel.deleteWordById(request.params.id);
-        response.json(data);
-    });
+    static async deleteWordById(id){
+        return await WordModel.deleteWordById(id)
+    }
 }

@@ -21,6 +21,15 @@ module.exports = class User {
         });
     }
 
+    static async getActiveUserByEmail(email){
+        return await prisma.user.findMany({
+            where: {
+                email: email,
+                deleted: false
+            }
+        });
+    }
+
     static async getUserById(id){
         return await prisma.user.findMany({
             where: {

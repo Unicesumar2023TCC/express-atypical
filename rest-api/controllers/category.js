@@ -1,30 +1,30 @@
-const multer = require('multer');
-const upload = multer();
+const CategoryModel = require('../models/category');
 
-module.exports = function(api){
+module.exports = class Category {
 
-    const CategoryModel = require('../models/category');
+    static async getCategoriesByUserId(id){
+        return await CategoryModel.getCategoriesByUserId(id);
+    }
 
-    api.get('/category/:id?', async function (request, response){
-        const category = await CategoryModel.getCategoriesByUserId(request.params.id);
-        response.json(category);
-    })
+    static async insertNewCategory(data){
+        if((data.name).length > 0){
+            if(await this.checkIfCategoryExist(data) === false){
+                return await CategoryModel.insertNewCategory(data)
+            }
+        }
+            
+        return false;
+    }
 
-    //add new category
-    api.post('/category', upload.none(), async function(request, response){
-        data = await CategoryModel.insertNewCategory(request.body);
-        response.json(data);
-    });
+    static async checkIfCategoryExist(data){
+        return Boolean((await CategoryModel.getCategoryByNameAndUser(data)).length)
+    }
 
-    //edit category
-    api.put('/category', upload.none(), async function(request, response){
-        data = await CategoryModel.updateCategory(request.body);
-        response.json(data);
-    });
+    static async updateCategory(data){
+        return await CategoryModel.updateCategory(data)
+    }
 
-    //delete category
-    api.delete('/category/:id?', upload.none(), async function(request, response){
-        data = await CategoryModel.deleteCategoryById(request.params.id);
-        response.json(data);
-    });
+    static async deleteCategoryById(id){
+        return await CategoryModel.deleteCategoryById(id)
+    }
 }

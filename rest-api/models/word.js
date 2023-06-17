@@ -23,6 +23,17 @@ module.exports = class Word {
         })
     }
 
+    static async getWordByNameAndCategory(data){
+        return await prisma.word.findMany({
+            where: {
+                idCategory: parseInt(data.idCategory),
+                name: data.name,
+                deleted: false,
+                status: 'ACTIVE'
+            }
+        });
+    }
+
     static async updateWordById(data){
         return await prisma.word.update({
             where: {
