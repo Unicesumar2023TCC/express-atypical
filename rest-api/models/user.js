@@ -68,4 +68,12 @@ module.exports = class User {
             }
         })
     }
+
+    static async checkUserLogin(email){
+        return await prisma.user.findMany({
+            where: {
+                email: email
+            }
+        });
+    }
 }
